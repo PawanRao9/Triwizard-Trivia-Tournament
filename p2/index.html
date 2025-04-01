@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Triwizard Trivia Tournament</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Combined and enhanced styles */
+    :root {
+      --gold: #d4af37;
+      --silver: #c0c0c0;
+      --bronze: #cd7f32;
+      --gryffindor-primary: #740001;
+      --gryffindor-secondary: #D3A625;
+      --slytherin-primary: #1a472a;
+      --slytherin-secondary: #5D5D5D;
+      --ravenclaw-primary: #0e1a40;
+      --ravenclaw-secondary: #946b2d;
+      --hufflepuff-primary: #ecb939;
+      --hufflepuff-secondary: #000000;
+      --dark-bg: #0a0a1a;
+      --light-text: #f0f0f0;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background-color: var(--dark-bg);
+      color: var(--light-text);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Animated background */
+    .magic-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(ellipse at center, #1a1a3a 0%, #0a0a1a 100%);
+      overflow: hidden;
+    }
+    
+    .magic-particle {
+      position: absolute;
+      background: rgba(212, 175, 55, 0.6);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    
+    /* Header with animation */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 5%;
+      background-color: rgba(10, 10, 26, 0.8);
+      position: fixed;
+      width: 100%;
+      z-index: 100;
+      border-bottom: 1px solid var(--gold);
+      backdrop-filter: blur(5px);
+      animation: fadeInDown 0.8s ease-out;
+    }
+    
+    .logo {
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--gold);
+      text-decoration: none;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+      letter-spacing: 2px;
+      transition: all 0.3s;
+    }
+    
+    .logo:hover {
+      text-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+      transform: scale(1.05);
+    }
+    
+    nav a {
+      color: var(--light-text);
+      text-decoration: none;
+      margin-left: 30px;
+      font-size: 18px;
+      transition: all 0.3s;
+      position: relative;
+      padding: 5px 0;
+      font-family: 'Cinzel Decorative', cursive;
+    }
+    
+    nav a:after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--gold);
+      transition: width 0.3s;
+    }
+    
+    nav a:hover, nav a.active {
+      color: var(--gold);
+    }
+    
+    nav a:hover:after, nav a.active:after {
+      width: 100%;
+    }
+    
+    .container {
+      padding-top: 100px;
+      flex: 1;
+    }
+    
+    /* Main tournament area - Combined from both versions */
+    .tournament-arena {
+      position: relative;
+      width: 100%;
+      min-height: calc(100vh - 100px);
+      overflow: hidden;
+      padding: 20px 5%;
+    }
+    
+    .tournament-content {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      animation: fadeIn 1s ease-out;
+      margin-bottom: 40px;
+    }
+    
+    h1 {
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 4rem;
+      margin-bottom: 20px;
+      color: var(--gold);
+      text-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
+      letter-spacing: 3px;
+      animation: glow 2s infinite alternate;
+    }
+    
+    h2 {
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--gold);
+      margin-bottom: 15px;
+    }
+    
+    h3 {
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--gold);
+      margin-bottom: 15px;
+    }
+    
+    .typing-text {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      color: var(--light-text);
+      height: 60px;
+      font-family: 'Cinzel Decorative', cursive;
+    }
+    
+    .typing-text span {
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+    
+    p {
+      font-size: 1.3rem;
+      margin-bottom: 40px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
+      opacity: 0.9;
+    }
+    
+    /* Login Modal */
+    .login-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .login-content {
+      background-color: rgba(20, 20, 40, 0.95);
+      padding: 40px;
+      border-radius: 15px;
+      border: 2px solid var(--gold);
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+      position: relative;
+    }
+    
+    .close-login {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: var(--gold);
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .close-login:hover {
+      transform: rotate(90deg);
+    }
+    
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .form-group label {
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--gold);
+    }
+    
+    .form-group input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--gold);
+      background-color: rgba(10, 10, 26, 0.8);
+      color: var(--light-text);
+      font-size: 16px;
+    }
+    
+    .login-button {
+      background: linear-gradient(135deg, var(--gold) 0%, #f0e6c2 100%);
+      color: var(--dark-bg);
+      border: none;
+      padding: 15px;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: bold;
+      font-family: 'Cinzel Decorative', cursive;
+      margin-top: 10px;
+    }
+    
+    .login-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(212, 175, 55, 0.6);
+    }
+    
+    .login-links {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    
+    .login-links a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+    
+    .login-links a:hover {
+      text-decoration: underline;
+    }
+    
+    /* House selection from first version - enhanced */
+    .house-selection {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 40px;
+    }
+    
+    .houses {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+      margin: 20px auto;
+    }
+    
+    .house {
+      padding: 20px;
+      border-radius: 15px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s;
+      background-color: rgba(20, 20, 40, 0.8);
+      border: 2px solid;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+    }
+    
+    .house:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4);
+    }
+    
+    .house h3 {
+      margin-top: 0;
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 1.5rem;
+    }
+    
+    .house p {
+      font-size: 1rem;
+      margin-bottom: 0;
+    }
+    
+    .house.gryffindor {
+      border-color: var(--gryffindor-secondary);
+    }
+    
+    .house.slytherin {
+      border-color: var(--slytherin-secondary);
+    }
+    
+    .house.ravenclaw {
+      border-color: var(--ravenclaw-secondary);
+    }
+    
+    .house.hufflepuff {
+      border-color: var(--hufflepuff-secondary);
+    }
+    
+    .house-badge {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      font-family: 'Cinzel Decorative', cursive;
+      border: 3px solid;
+      transition: all 0.3s;
+    }
+    
+    .gryffindor .house-badge {
+      background-color: var(--gryffindor-secondary);
+      color: var(--gryffindor-primary);
+      border-color: var(--gryffindor-primary);
+    }
+    
+    .slytherin .house-badge {
+      background-color: var(--slytherin-secondary);
+      color: var(--slytherin-primary);
+      border-color: var(--slytherin-primary);
+    }
+    
+    .ravenclaw .house-badge {
+      background-color: var(--ravenclaw-secondary);
+      color: var(--ravenclaw-primary);
+      border-color: var(--ravenclaw-primary);
+    }
+    
+    .hufflepuff .house-badge {
+      background-color: var(--hufflepuff-secondary);
+      color: var(--hufflepuff-primary);
+      border-color: var(--hufflepuff-primary);
+    }
+    
+    /* Game interface from first version - enhanced */
+    #gameInterface {
+      display: none;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: rgba(20, 20, 40, 0.9);
+      border-radius: 15px;
+      padding: 30px;
+      border: 2px solid var(--gold);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+    
+    .match-info {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 2rem;
+      align-items: center;
+    }
+    
+    .player {
+      text-align: center;
+      padding: 1rem;
+      border-radius: 10px;
+      width: 45%;
+      background-color: rgba(10, 10, 26, 0.8);
+      border: 2px solid;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .player.user {
+      border-color: var(--gryffindor-secondary);
+    }
+    
+    .player.opponent {
+      border-color: var(--slytherin-secondary);
+    }
+    
+    .player h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-family: 'Cinzel Decorative', cursive;
+    }
+    
+    .player .score {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--gold);
+      margin-top: 10px;
+    }
+    
+    .timer {
+      background-color: rgba(10, 10, 26, 0.8);
+      padding: 0.5rem 1.5rem;
+      border-radius: 50px;
+      font-size: 1.8rem;
+      border: 2px solid var(--gold);
+      color: var(--gold);
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    }
+    
+    /* Enhanced Quidditch field */
+    .quidditch-field {
+      width: 100%;
+      height: 150px;
+      background-color: #0D7517;
+      border-radius: 10px;
+      margin: 2rem 0;
+      position: relative;
+      overflow: hidden;
+      border: 3px solid var(--gold);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      background-image: url('https://i.ibb.co/6Yk1Z0L/quidditch-field.png');
+      background-size: cover;
+    }
+    
+    .team-position {
+      position: absolute;
+      height: 50px;
+      width: 50px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      transition: left 1s ease-in-out;
+      filter: drop-shadow(0 0 5px rgba(0,0,0,0.7));
+    }
+    
+    .user-team {
+      top: 20px;
+      left: 50px;
+    }
+    
+    .opponent-team {
+      bottom: 20px;
+      left: 50px;
+    }
+    
+    .snitch {
+      position: absolute;
+      height: 25px;
+      width: 25px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23FFD700' stroke='%23FFD700' stroke-width='5'/%3E%3C/svg%3E");
+      background-size: contain;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      animation: float 3s infinite ease-in-out, glow 2s infinite alternate;
+    }
+    
+    /* Enhanced question container */
+    .question-container {
+      background-color: rgba(10, 10, 26, 0.8);
+      padding: 1.5rem;
+      border-radius: 10px;
+      width: 100%;
+      margin-bottom: 2rem;
+      border: 2px solid var(--gold);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .question {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      color: var(--light-text);
+    }
+    
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    .option {
+      background-color: rgba(20, 20, 40, 0.8);
+      border: 2px solid var(--gold);
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      text-align: left;
+    }
+    
+    .option:hover {
+      background-color: rgba(212, 175, 55, 0.1);
+      transform: translateY(-3px);
+    }
+    
+    .option.correct {
+      background-color: rgba(35, 134, 54, 0.7);
+      border-color: #238636;
+    }
+    
+    .option.incorrect {
+      background-color: rgba(248, 81, 73, 0.7);
+      border-color: #F85149;
+    }
+    
+    .option-letter {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--gold);
+      color: var(--dark-bg);
+      text-align: center;
+      line-height: 30px;
+      margin-right: 1rem;
+      flex-shrink: 0;
+      font-weight: bold;
+      font-family: 'Cinzel Decorative', cursive;
+    }
+    
+    /* Spell effects - enhanced */
+    .spell-effect {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 100;
+      display: none;
+    }
+    
+    .spell-effect.active {
+      display: block;
+      animation: spellCast 1s forwards;
+    }
+    
+    @keyframes spellCast {
+      0% { background-color: rgba(255, 215, 0, 0); }
+      50% { background-color: rgba(255, 215, 0, 0.3); }
+      100% { background-color: rgba(255, 215, 0, 0); }
+    }
+    
+    .wand {
+      position: fixed;
+      width: 150px;
+      height: 20px;
+      background: linear-gradient(to right, #8B4513, #A0522D);
+      border-radius: 2px 10px 10px 2px;
+      bottom: 20px;
+      left: 20px;
+      transform-origin: left center;
+      transform: rotate(0deg);
+      transition: transform 0.5s;
+      z-index: 101;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    
+    .wand.casting {
+      animation: wandCast 1s forwards;
+    }
+    
+    @keyframes wandCast {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(45deg); }
+      75% { transform: rotate(-15deg); }
+      100% { transform: rotate(0deg); }
+    }
+    
+    .match-status {
+      text-align: center;
+      font-size: 1.3rem;
+      margin-top: 1.5rem;
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', cursive;
+    }
+    
+    /* Buttons - enhanced */
+    .start-match {
+      background: linear-gradient(135deg, var(--gold) 0%, #f0e6c2 100%);
+      color: var(--dark-bg);
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: bold;
+      box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+      position: relative;
+      overflow: hidden;
+      font-family: 'Cinzel Decorative', cursive;
+      letter-spacing: 1px;
+      margin: 20px 0;
+    }
+    
+    .start-match:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+      transition: all 0.3s;
+    }
+    
+    .start-match:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(212, 175, 55, 0.6);
+    }
+    
+    .start-match:hover:after {
+      background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%);
+    }
+    
+    /* Leaderboard from second version */
+    .leaderboard {
+      background-color: rgba(20, 20, 40, 0.9);
+      border: 2px solid var(--gold);
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 900px;
+      margin: 50px auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      animation: fadeInUp 0.8s ease-out;
+      display: none;
+    }
+    
+    .leaderboard h2 {
+      color: var(--gold);
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 2.2rem;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+    
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .leaderboard-table th, .leaderboard-table td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .leaderboard-table th {
+      background-color: rgba(212, 175, 55, 0.2);
+      color: var(--gold);
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      font-family: 'Cinzel Decorative', cursive;
+    }
+    
+    .leaderboard-table tr {
+      transition: all 0.3s;
+    }
+    
+    .leaderboard-table tr:hover {
+      background-color: rgba(212, 175, 55, 0.1);
+      transform: scale(1.01);
+    }
+    
+    .leaderboard-table tr:first-child td {
+      color: var(--gold);
+      font-weight: bold;
+    }
+    
+    .leaderboard-table tr:nth-child(2) td {
+      color: var(--silver);
+    }
+    
+    .leaderboard-table tr:nth-child(3) td {
+      color: var(--bronze);
+    }
+    
+    /* Footer with contact information */
+    footer {
+      background-color: rgba(10, 10, 26, 0.8);
+      padding: 40px 5%;
+      border-top: 1px solid var(--gold);
+      backdrop-filter: blur(5px);
+      margin-top: auto;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+    
+    .footer-section {
+      flex: 1;
+      min-width: 250px;
+    }
+    
+    .footer-section h3 {
+      color: var(--gold);
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+    
+    .footer-section p {
+      margin-bottom: 15px;
+      font-size: 1rem;
+    }
+    
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .contact-item i {
+      color: var(--gold);
+      font-size: 1.2rem;
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .social-links a {
+      color: var(--light-text);
+      font-size: 1.5rem;
+      transition: all 0.3s;
+    }
+    
+    .social-links a:hover {
+      color: var(--gold);
+      transform: translateY(-3px);
+    }
+    
+    .footer-bottom {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      font-size: 0.9rem;
+    }
+    
+    /* Animations */
+    @keyframes float {
+      0% { transform: translateY(-50%) translateX(0); }
+      50% { transform: translateY(-40%) translateX(-10px); }
+      100% { transform: translateY(-50%) translateX(0); }
+    }
+    
+    @keyframes glow {
+      0% { text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
+      100% { text-shadow: 0 0 20px rgba(212, 175, 55, 0.8), 0 0 30px rgba(212, 175, 55, 0.6); }
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { opacity: 0.8; }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Typing animation */
+    .typing-text::after {
+      content: '|';
+      animation: blink 1s step-end infinite;
+    }
+    
+    @keyframes blink {
+      from, to { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    
+    /* Responsive design */
+    @media (max-width: 1000px) {
+      .houses {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      .typing-text {
+        font-size: 1.8rem;
+        height: 50px;
+      }
+      
+      .options {
+        grid-template-columns: 1fr;
+      }
+      
+      nav {
+        display: none;
+      }
+      
+      .house-badge {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+      }
+      
+      .houses {
+        grid-template-columns: 1fr;
+      }
+      
+      .player {
+        width: 40%;
+      }
+      
+      .timer {
+        font-size: 1.5rem;
+        padding: 0.5rem 1rem;
+      }
+      
+      .footer-content {
+        flex-direction: column;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .match-info {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .player {
+        width: 100%;
+      }
+      
+      .timer {
+        order: -1;
+      }
+      
+      .login-content {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="magic-background" id="magicBackground"></div>
+  
+  <!-- Login Modal -->
+  <div class="login-modal" id="loginModal">
+    <div class="login-content">
+      <span class="close-login" id="closeLogin">&times;</span>
+      <h2>Wizard Login</h2>
+      <form class="login-form">
+        <div class="form-group">
+          <label for="username">Wizard Name</label>
+          <input type="text" id="username" placeholder="Enter your magical name" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Secret Spell</label>
+          <input type="password" id="password" placeholder="Enter your secret spell" required>
+        </div>
+        <button type="submit" class="login-button">Enter the Tournament</button>
+        <div class="login-links">
+          <a href="#">Forgot your spell?</a>
+          <a href="#">Create new wizard profile</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <header>
+    <a href="#" class="logo">Triwizard Trivia</a>
+  
+    <nav>
+      <a href="#" class="active">Tournament</a>
+      <a href="#">Challenges</a>
+      <a href="#" id="leaderboardLink">Leaderboard</a>
+      <a href="#" id="loginLink">Login</a>
+    </nav>
+  </header>
+  
+  <div class="container">
+    <section class="tournament-arena">
+      <div class="tournament-content">
+        <h1>Triwizard Trivia Tournament</h1>
+        <h2 class="typing-text">The <span>Magical</span> Challenge</h2>
+        <p>Test your knowledge of the wizarding world in this epic trivia tournament. Choose your house, compete against opponents, and climb the leaderboard to become the ultimate champion!</p>
+      </div>
+      
+      <div class="house-selection">
+        <h2>Choose Your House</h2>
+        <div class="houses">
+          <div class="house gryffindor" onclick="selectHouse('Gryffindor')">
+            <div class="house-badge">G</div>
+            <h3>Gryffindor</h3>
+            <p>Courage, bravery, and determination</p>
+          </div>
+          <div class="house slytherin" onclick="selectHouse('Slytherin')">
+            <div class="house-badge">S</div>
+            <h3>Slytherin</h3>
+            <p>Ambition, cunning, and resourcefulness</p>
+          </div>
+          <div class="house ravenclaw" onclick="selectHouse('Ravenclaw')">
+            <div class="house-badge">R</div>
+            <h3>Ravenclaw</h3>
+            <p>Intelligence, creativity, and wit</p>
+          </div>
+          <div class="house hufflepuff" onclick="selectHouse('Hufflepuff')">
+            <div class="house-badge">H</div>
+            <h3>Hufflepuff</h3>
+            <p>Hard work, dedication, and loyalty</p>
+          </div>
+        </div>
+      </div>
+      
+      <button class="start-match" onclick="startMatch()">Start Tournament</button>
+      
+      <div id="gameInterface">
+        <div class="match-info">
+          <div class="player user">
+            <h2>You (<span id="userHouse">Gryffindor</span>)</h2>
+            <div class="score">0</div>
+          </div>
+          <div class="timer">30</div>
+          <div class="player opponent">
+            <h2>Opponent (<span id="opponentHouse">Slytherin</span>)</h2>
+            <div class="score">0</div>
+          </div>
+        </div>
+        
+        <div class="quidditch-field">
+          <div class="team-position user-team"></div>
+          <div class="team-position opponent-team"></div>
+          <div class="snitch"></div>
+        </div>
+        
+        <div class="question-container">
+          <div class="question">Loading question...</div>
+          <div class="options">
+            <div class="option" onclick="answerQuestion(0)">
+              <span class="option-letter">A</span>
+              <span class="option-text">Loading...</span>
+            </div>
+            <div class="option" onclick="answerQuestion(1)">
+              <span class="option-letter">B</span>
+              <span class="option-text">Loading...</span>
+            </div>
+            <div class="option" onclick="answerQuestion(2)">
+              <span class="option-letter">C</span>
+              <span class="option-text">Loading...</span>
+            </div>
+            <div class="option" onclick="answerQuestion(3)">
+              <span class="option-letter">D</span>
+              <span class="option-text">Loading...</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="match-status">Match starting soon...</div>
+      </div>
+      
+      <div class="leaderboard">
+        <h2>Tournament Leaderboard</h2>
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>Position</th>
+              <th>Player</th>
+              <th>House</th>
+              <th>Score</th>
+              <th>Wins</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Albus Dumbledore</td>
+              <td>Gryffindor</td>
+              <td>12,450</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Minerva McGonagall</td>
+              <td>Gryffindor</td>
+              <td>11,200</td>
+              <td>7</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Severus Snape</td>
+              <td>Slytherin</td>
+              <td>10,850</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Filius Flitwick</td>
+              <td>Ravenclaw</td>
+              <td>9,750</td>
+              <td>5</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Pomona Sprout</td>
+              <td>Hufflepuff</td>
+              <td>9,300</td>
+              <td>5</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+  
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>About the Tournament</h3>
+        <p>The Triwizard Trivia Tournament is a magical competition testing knowledge of the wizarding world. Prove your mastery of spells, potions, magical creatures, and wizarding history!</p>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Contact Us</h3>
+        <div class="contact-info">
+          <div class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Hogwarts Castle, Scotland</span>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <span>tournament@hogwarts.edu</span>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-phone"></i>
+            <span>+44 7911 123456</span>
+          </div>
+        </div>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <p><a href="#" style="color: var(--gold); text-decoration: none;">Tournament Rules</a></p>
+        <p><a href="#" style="color: var(--gold); text-decoration: none;">FAQ</a></p>
+        <p><a href="#" style="color: var(--gold); text-decoration: none;">Privacy Policy</a></p>
+        <p><a href="#" style="color: var(--gold); text-decoration: none;">Terms of Service</a></p>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2023 Triwizard Trivia Tournament. All rights reserved. Not affiliated with Warner Bros. or J.K. Rowling.</p>
+    </div>
+  </footer>
+  
+  <div class="wand" onclick="castSpell()"></div>
+  <div class="spell-effect"></div>
+  
+  <script>
+    // Game state - enhanced with features from both versions
+    let gameState = {
+      playerHouse: "",
+      opponentHouse: "",
+      playerScore: 0,
+      opponentScore: 0,
+      currentQuestion: null,
+      questionIndex: 0,
+      timer: 30,
+      timerInterval: null,
+      matchStarted: false,
+      questions: [
+        {
+          question: "Which spell is used to disarm an opponent?",
+          options: ["Expelliarmus", "Stupefy", "Impedimenta", "Incarcerous"],
+          correctAnswer: 0,
+          difficulty: "easy"
+        },
+        {
+          question: "Who is the Half-Blood Prince?",
+          options: ["Harry Potter", "Severus Snape", "Tom Riddle", "Sirius Black"],
+          correctAnswer: 1,
+          difficulty: "medium"
+        },
+        {
+          question: "What is the core of Harry Potter's wand?",
+          options: ["Dragon heartstring", "Unicorn hair", "Phoenix feather", "Veela hair"],
+          correctAnswer: 2,
+          difficulty: "easy"
+        },
+        {
+          question: "Which of these is NOT a Deathly Hallow?",
+          options: ["The Elder Wand", "The Invisibility Cloak", "The Resurrection Stone", "The Sword of Gryffindor"],
+          correctAnswer: 3,
+          difficulty: "medium"
+        },
+        {
+          question: "Which potion is known as 'Liquid Luck'?",
+          options: ["Amortentia", "Polyjuice Potion", "Veritaserum", "Felix Felicis"],
+          correctAnswer: 3,
+          difficulty: "medium"
+        },
+        {
+          question: "What form does Severus Snape's Patronus take?",
+          options: ["Doe", "Stag", "Raven", "Wolf"],
+          correctAnswer: 0,
+          difficulty: "hard"
+        },
+        {
+          question: "How many Horcruxes did Voldemort create intentionally?",
+          options: ["5", "6", "7", "8"],
+          correctAnswer: 1,
+          difficulty: "hard"
+        },
+        {
+          question: "Who destroyed the final Horcrux, Nagini?",
+          options: ["Harry Potter", "Ron Weasley", "Hermione Granger", "Neville Longbottom"],
+          correctAnswer: 3,
+          difficulty: "medium"
+        },
+        {
+          question: "What position does Harry Potter play in Quidditch?",
+          options: ["Keeper", "Chaser", "Beater", "Seeker"],
+          correctAnswer: 3,
+          difficulty: "easy"
+        },
+        {
+          question: "Which of these is NOT one of the Unforgivable Curses?",
+          options: ["Imperius Curse", "Cruciatus Curse", "Killing Curse", "Sectumsempra"],
+          correctAnswer: 3,
+          difficulty: "medium"
+        },
+        {
+          question: "What is the name of the goblin who helps Harry break into Gringotts?",
+          options: ["Griphook", "Bogrod", "Ragnok", "Filius"],
+          correctAnswer: 0,
+          difficulty: "medium"
+        },
+        {
+          question: "Which creature can only be seen after witnessing death?",
+          options: ["Thestral", "Hippogriff", "Bowtruckle", "Niffler"],
+          correctAnswer: 0,
+          difficulty: "medium"
+        },
+        {
+          question: "What is the name of the wizarding prison?",
+          options: ["Azkaban", "Nurmengard", "Azkaron", "Durmstrang"],
+          correctAnswer: 0,
+          difficulty: "easy"
+        },
+        {
+          question: "Which of these is NOT one of the Hogwarts founders?",
+          options: ["Godric Gryffindor", "Rowena Ravenclaw", "Helga Hufflepuff", "Merlin Slytherin"],
+          correctAnswer: 3,
+          difficulty: "easy"
+        },
+        {
+          question: "What is the incantation for the Patronus Charm?",
+          options: ["Expecto Patronum", "Protego Patronum", "Accio Patronum", "Lumos Patronum"],
+          correctAnswer: 0,
+          difficulty: "easy"
+        }
+      ],
+      leaderboard: [
+        { name: "Albus Dumbledore", house: "Gryffindor", score: 12450, wins: 8 },
+        { name: "Minerva McGonagall", house: "Gryffindor", score: 11200, wins: 7 },
+        { name: "Severus Snape", house: "Slytherin", score: 10850, wins: 6 },
+        { name: "Filius Flitwick", house: "Ravenclaw", score: 9750, wins: 5 },
+        { name: "Pomona Sprout", house: "Hufflepuff", score: 9300, wins: 5 }
+      ]
+    };
+    
+    // DOM Elements
+    const userScoreElement = document.querySelector('.player.user .score');
+    const opponentScoreElement = document.querySelector('.player.opponent .score');
+    const timerElement = document.querySelector('.timer');
+    const questionElement = document.querySelector('.question');
+    const optionElements = document.querySelectorAll('.option');
+    const userTeamElement = document.querySelector('.user-team');
+    const opponentTeamElement = document.querySelector('.opponent-team');
+    const matchStatusElement = document.querySelector('.match-status');
+    const startMatchButton = document.querySelector('.start-match');
+    const gameInterface = document.getElementById('gameInterface');
+    const houseSelection = document.querySelector('.house-selection');
+    const userHouseElement = document.getElementById('userHouse');
+    const opponentHouseElement = document.getElementById('opponentHouse');
+    const wandElement = document.querySelector('.wand');
+    const spellEffectElement = document.querySelector('.spell-effect');
+    const leaderboardElement = document.querySelector('.leaderboard');
+    const leaderboardLink = document.getElementById('leaderboardLink');
+    const loginLink = document.getElementById('loginLink');
+    const loginModal = document.getElementById('loginModal');
+    const closeLogin = document.getElementById('closeLogin');
+    
+    // Create magical particles
+    function createParticles() {
+      const background = document.getElementById('magicBackground');
+      const particleCount = 50;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('magic-particle');
+        
+        // Random size between 2px and 6px
+        const size = Math.random() * 4 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Random position
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        
+        // Random animation
+        const duration = Math.random() * 20 + 10;
+        const delay = Math.random() * 10;
+        particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+        
+        // Random opacity
+        particle.style.opacity = Math.random() * 0.5 + 0.3;
+        
+        background.appendChild(particle);
+      }
+    }
+    
+    // Select house
+    function selectHouse(house) {
+      gameState.playerHouse = house;
+      userHouseElement.textContent = house;
+      
+      // Update UI based on house
+      const userPlayerElement = document.querySelector('.player.user');
+      userPlayerElement.className = 'player user';
+      
+      switch(house) {
+        case 'Gryffindor':
+          userPlayerElement.style.borderColor = 'var(--gryffindor-secondary)';
+          userTeamElement.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23740001' stroke='%23D3A625' stroke-width='5'/%3E%3C/svg%3E")`;
+          break;
+        case 'Slytherin':
+          userPlayerElement.style.borderColor = 'var(--slytherin-secondary)';
+          userTeamElement.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%231A472A' stroke='%235D5D5D' stroke-width='5'/%3E%3C/svg%3E")`;
+          break;
+        case 'Ravenclaw':
+          userPlayerElement.style.borderColor = 'var(--ravenclaw-secondary)';
+          userTeamElement.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%230E1A40' stroke='%23946B2D' stroke-width='5'/%3E%3C/svg%3E")`;
+          break;
+        case 'Hufflepuff':
+          userPlayerElement.style.borderColor = 'var(--hufflepuff-secondary)';
+          userTeamElement.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23FFD800' stroke='%23000000' stroke-width='5'/%3E%3C/svg%3E")`;
+          break;
+      }
+      
+      startMatchButton.textContent = "Start Tournament";
+      startMatchButton.style.display = 'block';
+    }
+    
+    // Start match
+    function startMatch() {
+      if (!gameState.playerHouse) {
+        alert("Please select your house first!");
+        return;
+      }
+      
+      // Select random opponent house (not the same as player)
+      let opponentHouses = ['Gryffindor', 'Slytherin', 'Ravenclaw', 'Hufflepuff'].filter(h => h !== gameState.playerHouse);
+      gameState.opponentHouse = opponentHouses[Math.floor(Math.random() * opponentHouses.length)];
+      opponentHouseElement.textContent = gameState.opponentHouse;
+      
+      // Update opponent UI based on house
+      const opponentPlayerElement = document.querySelector('.player.opponent');
+      opponentPlayerElement.className = 'player opponent';
+      
+      switch(gameState.opponentHouse) {
+        case 'Gryffindor':
+          opponentPlayerElement.style.borderColor = 'var(--gryffindor-secondary)';
+          opponentTeamElement.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23740001' stroke='%23D3A625' stroke-width='5'/%3E%3C/svg%3E")`;
+          break;
+        case 'Slytherin':
+          opponentPlayerElement.style.borderColor = 'var(--slytherin-secondary)';
+          opponentTeamElement.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%231A472A' stroke='%235D5D5D' stroke-width='5'/%3E%3C/svg%3E")`;
+          break;
+        case 'Ravenclaw':
+          opponentPlayerElement.style.borderColor = 'var(--ravenclaw-secondary)';
+          opponentTeamElement.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%230E1A40' stroke='%23946B2D' stroke-width='5'/%3E%3C/svg%3E")`;
+          break;
+        case 'Hufflepuff':
+          opponentPlayerElement.style.borderColor = 'var(--hufflepuff-secondary)';
+          opponentTeamElement.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23FFD800' stroke='%23000000' stroke-width='5'/%3E%3C/svg%3E")`;
+          break;
+      }
+      
+      gameState.matchStarted = true;
+      houseSelection.style.display = 'none';
+      gameInterface.style.display = 'block';
+      startMatchButton.style.display = 'none';
+      leaderboardElement.style.display = 'none';
+      
+      // Set initial positions
+      userTeamElement.style.left = '50px';
+      opponentTeamElement.style.left = '50px';
+      
+      // Reset scores
+      gameState.playerScore = 0;
+      gameState.opponentScore = 0;
+      updateScores();
+      
+      // Reset question index
+      gameState.questionIndex = 0;
+      
+      // Start first question
+      nextQuestion();
+      
+      // Start timer
+      startTimer();
+      
+      matchStatusElement.textContent = "Match in progress! Answer quickly!";
+    }
+    
+    // Display next question
+    function nextQuestion() {
+      if (gameState.questionIndex >= gameState.questions.length) {
+        endMatch();
+        return;
+      }
+      
+      gameState.currentQuestion = gameState.questions[gameState.questionIndex];
+      questionElement.textContent = gameState.currentQuestion.question;
+      
+      // Set options
+      for (let i = 0; i < optionElements.length; i++) {
+        const optionText = optionElements[i].querySelector('.option-text');
+        optionText.textContent = gameState.currentQuestion.options[i];
+        optionElements[i].className = 'option'; // Reset classes
+      }
+      
+      gameState.questionIndex++;
+    }
+    
+    // Answer question
+    function answerQuestion(answerIndex) {
+      if (!gameState.matchStarted) return;
+      
+      const correctAnswerIndex = gameState.currentQuestion.correctAnswer;
+      
+      // Mark correct and incorrect options
+      optionElements[correctAnswerIndex].classList.add('correct');
+      
+      if (answerIndex !== correctAnswerIndex) {
+        optionElements[answerIndex].classList.add('incorrect');
+      }
+      
+      // Disable all options after answering
+      optionElements.forEach(option => {
+        option.style.pointerEvents = 'none';
+      });
+      
+      // Update score if correct
+      if (answerIndex === correctAnswerIndex) {
+        gameState.playerScore += (gameState.timer * 10);
+        updateScores();
+        castSpell();
+        moveTeam('user', calculatePosition(gameState.playerScore));
+      }
+      
+      // Simulate opponent answer
+      simulateOpponentAnswer();
+      
+      // Wait a moment before next question
+      setTimeout(() => {
+        resetTimer();
+        nextQuestion();
+        // Re-enable options
+        optionElements.forEach(option => {
+          option.style.pointerEvents = 'auto';
+        });
+      }, 2000);
+    }
+    
+    // Simulate opponent answering
+    function simulateOpponentAnswer() {
+      // Random chance of getting it right based on difficulty
+      const difficulty = gameState.currentQuestion.difficulty;
+      let chance;
+      
+      switch(difficulty) {
+        case 'easy':
+          chance = 0.7; // 70% chance to get it right
+          break;
+        case 'medium':
+          chance = 0.5; // 50% chance to get it right
+          break;
+        case 'hard':
+          chance = 0.3; // 30% chance to get it right
+          break;
+        default:
+          chance = 0.5;
+      }
+      
+      const isCorrect = Math.random() < chance;
+      
+      if (isCorrect) {
+        // Random score between 50-300
+        const points = Math.floor(Math.random() * 250) + 50;
+        gameState.opponentScore += points;
+        updateScores();
+        moveTeam('opponent', calculatePosition(gameState.opponentScore));
+      }
+    }
+    
+    // Update scores
+    function updateScores() {
+      userScoreElement.textContent = gameState.playerScore;
+      opponentScoreElement.textContent = gameState.opponentScore;
+    }
+    
+    // Start timer
+    function startTimer() {
+      gameState.timer = 30;
+      timerElement.textContent = gameState.timer;
+      
+      clearInterval(gameState.timerInterval);
+      gameState.timerInterval = setInterval(() => {
+        gameState.timer--;
+        timerElement.textContent = gameState.timer;
+        
+        if (gameState.timer <= 0) {
+          // Time's up - move to next question
+          simulateOpponentAnswer();
+          resetTimer();
+          nextQuestion();
+        }
+      }, 1000);
+    }
+    
+    // Reset timer
+    function resetTimer() {
+      clearInterval(gameState.timerInterval);
+      gameState.timer = 30;
+      timerElement.textContent = gameState.timer;
+      startTimer();
+    }
+    
+    // End match
+    function endMatch() {
+      clearInterval(gameState.timerInterval);
+      gameState.matchStarted = false;
+      
+      if (gameState.playerScore > gameState.opponentScore) {
+        matchStatusElement.textContent = "Congratulations! You've won the match!";
+        // Add confetti effect
+        createConfetti();
+      } else if (gameState.playerScore < gameState.opponentScore) {
+        matchStatusElement.textContent = "You've lost the match. Better luck next time!";
+      } else {
+        matchStatusElement.textContent = "The match ended in a draw!";
+      }
+      
+      startMatchButton.textContent = "Play Again";
+      startMatchButton.style.display = 'block';
+      
+      // Show leaderboard button
+      leaderboardLink.style.display = 'block';
+    }
+    
+    // Cast spell effect
+    function castSpell() {
+      wandElement.classList.add('casting');
+      spellEffectElement.classList.add('active');
+      
+      setTimeout(() => {
+        wandElement.classList.remove('casting');
+        spellEffectElement.classList.remove('active');
+      }, 1000);
+    }
+    
+    // Calculate position based on score
+    function calculatePosition(score) {
+      // Map score to position (50px to 320px)
+      const maxScore = 3000;
+      const minPosition = 50;
+      const maxPosition = 320;
+      
+      let position = minPosition + (score / maxScore) * (maxPosition - minPosition);
+      position = Math.min(position, maxPosition); // Cap at max position
+      
+      return position;
+    }
+    
+    // Move team on the field
+    function moveTeam(team, position) {
+      if (team === 'user') {
+        userTeamElement.style.left = position + 'px';
+      } else {
+        opponentTeamElement.style.left = position + 'px';
+      }
+      
+      // Check if either team has caught the snitch
+      if (position >= 320) {
+        if (team === 'user') {
+          gameState.playerScore += 1000;
+          matchStatusElement.textContent = "You caught the Golden Snitch! +1000 points!";
+        } else {
+          gameState.opponentScore += 1000;
+          matchStatusElement.textContent = "Opponent caught the Golden Snitch! +1000 points!";
+        }
+        updateScores();
+        endMatch();
+      }
+    }
+    
+    // Create confetti effect for winning
+    function createConfetti() {
+      const confettiCount = 100;
+      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+      
+      for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'fixed';
+        confetti.style.width = '10px';
+        confetti.style.height = '10px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.borderRadius = '50%';
+        confetti.style.left = `${Math.random() * 100}%`;
+        confetti.style.top = '-10px';
+        confetti.style.zIndex = '1000';
+        confetti.style.transform = 'rotate(0deg)';
+        
+        document.body.appendChild(confetti);
+        
+        const animationDuration = Math.random() * 3 + 2;
+        
+        confetti.animate([
+          { top: '-10px', transform: 'rotate(0deg)', opacity: 1 },
+          { top: `${Math.random() * 100 + 100}%`, transform: 'rotate(360deg)', opacity: 0 }
+        ], {
+          duration: animationDuration * 1000,
+          easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)'
+        });
+        
+        setTimeout(() => {
+          confetti.remove();
+        }, animationDuration * 1000);
+      }
+    }
+    
+    // Toggle leaderboard
+    leaderboardLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (leaderboardElement.style.display === 'block') {
+        leaderboardElement.style.display = 'none';
+        if (!gameState.matchStarted) {
+          houseSelection.style.display = 'flex';
+          startMatchButton.style.display = 'block';
+        }
+      } else {
+        leaderboardElement.style.display = 'block';
+        houseSelection.style.display = 'none';
+        gameInterface.style.display = 'none';
+        startMatchButton.style.display = 'none';
+      }
+    });
+    
+    // Toggle login modal
+    loginLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      loginModal.style.display = 'flex';
+    });
+    
+    closeLogin.addEventListener('click', () => {
+      loginModal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === loginModal) {
+        loginModal.style.display = 'none';
+      }
+    });
+    
+    // Handle login form submission
+    document.querySelector('.login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      // Simple validation
+      if (username && password) {
+        alert(`Welcome, ${username}! You're now logged in.`);
+        loginModal.style.display = 'none';
+      } else {
+        alert('Please enter both your wizard name and secret spell!');
+      }
+    });
+    
+    // Initialize
+    window.onload = function() {
+      createParticles();
+      
+      // Typing effect
+      const typingElement = document.querySelector('.typing-text');
+      const text = typingElement.textContent;
+      typingElement.textContent = '';
+      
+      let i = 0;
+      const typing = setInterval(() => {
+        if (i < text.length) {
+          typingElement.innerHTML = text.substring(0, i+1) + '<span class="cursor">|</span>';
+          i++;
+        } else {
+          clearInterval(typing);
+          typingElement.innerHTML = text;
+        }
+      }, 100);
+    };
+  </script>
+</body>
+</html>
